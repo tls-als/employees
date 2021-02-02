@@ -3,83 +3,97 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="EUC-KR">
-<title>departmentsList</title>
+	<meta charset="EUC-KR">
+	<title>departmentsList</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 	<!-- 메뉴 -->
-	<div>
-		<table border="1">
-			<tr>
-				<td><a href="./index.jsp">홈으로</a></td>
-				<td><a href="./departmentsList.jsp">departments 테이블 목록</a></td>
-				<td><a href="./deptEmpList.jsp">dept_emp 테이블 목록</a></td>
-				<td><a href="./deptManagerList.jsp">dept_manager</a></td>
-				<td><a href="./employeesList.jsp">employees</a></td>
-				<td><a href="./salariesList.jsp">salaries</a></td>
-				<td><a href="./titlesList.jsp">titles</a></td>
-			</tr>
-		</table>
-	</div>
+	<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+		<ul class="navbar-nav">
+			<li class="nav-item active">
+			  	<a class="nav-link" href="./index.jsp">홈으로</a>
+			</li>
+			<li class="nav-item">
+			  	<a class="nav-link" href="./departmentsList.jsp">departments</a>
+			</li>
+			<li class="nav-item">
+			  	<a class="nav-link" href="./deptEmpList.jsp">dept_emp</a>
+			</li>
+			<li class="nav-item">
+			  	<a class="nav-link" href="./deptManagerList.jsp">dept_manager</a>
+			</li>
+			<li class="nav-item">
+			  	<a class="nav-link" href="./employeesList.jsp">employees</a>
+			</li>
+			<li class="nav-item">
+			  	<a class="nav-link" href="./salariesList.jsp">salaries</a>
+			</li>
+			<li class="nav-item">
+			  	<a class="nav-link" href="./titlesList.jsp">titles</a>
+			</li>
+		</ul>
+	</nav>
 
 	<!-- 내용 -->
-	<h1>departments 테이블 목록</h1>
-	<%
-		//현재 페이지 값을 담은 변수 생성. 1페이지로 초기화
-		int currentPage = 1;
-		//1페이지에 보여질 행의 변수 생성. 10행으로 초기화
-		int rowPerPage = 10;
-		
-		//request로부터 파라메터 값이 null이 아닐 때 currentPage값을 받음
-		if(request.getParameter("currentPage") != null) {
-			currentPage = Integer.parseInt(request.getParameter("currentPage"));
-		}
-		
-		//검색할 dept_name(부서명)을 받는 변수 생성
-		String searchDeptName = "";
-		if(request.getParameter("searchDeptName") != null) {
-			searchDeptName = request.getParameter("searchDeptName");
-		}
-		
-		// 1. mariadb(sw)사용할 수 있게
-		Class.forName("org.mariadb.jdbc.Driver");	// new Driver();와 같다
-		
-		// 2. mariadb 접속(주소+포트넘버+db이름, db접속계정, db계정암호)
-		Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/employees","root","java1004");
-		System.out.println(conn+"<-conn");
-		
-		// 3. conn 안에 쿼리(sql)를 만들어서 stmt 변수에 저장
-		String sql = "";
-		
-		//동적쿼리문
-		PreparedStatement stmt =  null;
-		//선택안함(모든 부서 조회)
-		if(searchDeptName.equals("")) {
-			sql = "SELECT dept_no,dept_name FROM departments LIMIT ?,?";
-			stmt = conn.prepareStatement(sql);
-			stmt.setInt(1, (currentPage-1)*rowPerPage);
-			stmt.setInt(2, rowPerPage);	
-		}
-		//부서 이름을 선택했을 때
-		else {
-			sql = "SELECT dept_no,dept_name FROM departments WHERE dept_name LIKE ? LIMIT ?,?";
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, "%"+searchDeptName+"%");
-			stmt.setInt(2, (currentPage-1)*rowPerPage);
-			stmt.setInt(3, rowPerPage);	
-		}
-		
-		//테스트
-		System.out.println(stmt+"<-stmt");
-		
-		// 4. 쿼리(실행)의 결과물을 가지고 온다
-		ResultSet rs = stmt.executeQuery();
-		System.out.println(rs+" <-rs");
-		
-		// 5. 출력
+	<div class="container" style="margin-top: 20px">
+		<h1>departments 테이블 목록</h1>
+		<%
+			//현재 페이지 값을 담은 변수 생성. 1페이지로 초기화
+			int currentPage = 1;
+			//1페이지에 보여질 행의 변수 생성. 10행으로 초기화
+			int rowPerPage = 10;
+			
+			//request로부터 파라메터 값이 null이 아닐 때 currentPage값을 받음
+			if(request.getParameter("currentPage") != null) {
+				currentPage = Integer.parseInt(request.getParameter("currentPage"));
+			}
+			
+			//검색할 dept_name(부서명)을 받는 변수 생성
+			String searchDeptName = "";
+			if(request.getParameter("searchDeptName") != null) {
+				searchDeptName = request.getParameter("searchDeptName");
+			}
+			
+			// 1. mariadb(sw)사용할 수 있게
+			Class.forName("org.mariadb.jdbc.Driver");	// new Driver();와 같다
+			
+			// 2. mariadb 접속(주소+포트넘버+db이름, db접속계정, db계정암호)
+			Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/employees","root","java1004");
+			System.out.println(conn+"<-conn");
+			
+			// 3. conn 안에 쿼리(sql)를 만들어서 stmt 변수에 저장
+			String sql = "";
+			
+			//동적쿼리문
+			PreparedStatement stmt =  null;
+			//선택안함(모든 부서 조회)
+			if(searchDeptName.equals("")) {
+				sql = "SELECT dept_no,dept_name FROM departments LIMIT ?,?";
+				stmt = conn.prepareStatement(sql);
+				stmt.setInt(1, (currentPage-1)*rowPerPage);
+				stmt.setInt(2, rowPerPage);	
+			}
+			//부서 이름을 선택했을 때
+			else {
+				sql = "SELECT dept_no,dept_name FROM departments WHERE dept_name LIKE ? LIMIT ?,?";
+				stmt = conn.prepareStatement(sql);
+				stmt.setString(1, "%"+searchDeptName+"%");
+				stmt.setInt(2, (currentPage-1)*rowPerPage);
+				stmt.setInt(3, rowPerPage);	
+			}
+			
+			//테스트
+			System.out.println(stmt+"<-stmt");
+			
+			// 4. 쿼리(실행)의 결과물을 가지고 온다
+			ResultSet rs = stmt.executeQuery();
+			System.out.println(rs+" <-rs");
+			
+			// 5. 출력
 		%>
 		<!-- 출력 -->
-		<table border="1">
+		<table class="table table-bordered">
 			<thead>
 				<tr>
 					<th>dept_no</th>
@@ -103,7 +117,7 @@
 		<div>
 			<%
 				//쿼리문 생성
-				String sql2 = "select count(*) from employees";
+				String sql2 = "select count(*) from departments";
 				PreparedStatement stmt2 = conn.prepareStatement(sql2);
 				ResultSet rs2 = stmt2.executeQuery();
 				//전체 행 변수
@@ -137,11 +151,14 @@
 		<!-- 부서 이름 검색폼 -->
 
 		<form method="post" action="./departmentsList.jsp">
-			<div>
-				부서명:
-				<input type="text" name="searchDeptName" value="<%=searchDeptName%>">
-				<button type="submit">검색</button>
+			<div class="input-group">
+				<label>부서명:&nbsp;</label>
+				<input class="form-control col-2" type="text" name="searchDeptName" value="<%=searchDeptName%>" placeholder="Search">
+				<div class="input-group-append">
+					<button class="btn btn-secondary" type="submit">검색</button>
+				</div>
 			</div>
 		</form>
+	</div>
 </body>
 </html>
